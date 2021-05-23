@@ -47,7 +47,7 @@
 		sta $d02f
 		lda #$53
 		sta $d02f
-		eom
+		// eom
 }
 
 .macro disableC65ROM() {

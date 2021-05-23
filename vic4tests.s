@@ -21,10 +21,16 @@ Entry: {
 
 		disableC65ROM()
 
+
+
 		//Initialise Mega65 into VIC4 mode at 40 mhz
 		enable40Mhz()
 		enableVIC4Registers()
 
+		//disable rom mappings
+		//and disable rom palette for 0-15
+		lda #$04
+		sta $d030
 
 		jsr setSpritePalette
 		
@@ -36,9 +42,8 @@ Entry: {
 setSpritePalette: {
 			lda $d070
 			and #%00110011
-			ora #$11001100		//Sprite = %11
+			ora #$11001100		//SpritePallete = %11
 
-			// lda #%10111001	//Text=10/Sprite=11/Alt=01
 			sta $d070
 			ldx #$00
 		!:
@@ -67,11 +72,11 @@ ResetScreen: {
 		sta $d021
 		
 		//Restore inital VIC-IV values
-			//hide sprites
-			//turn off 16 color sprites
-			lda #$00
-			sta $d015
-			// sta $d06b
+		//hide sprites
+		//turn off 16 color sprites
+		lda #$00
+		sta $d015
+		sta $d06b
 
 
 		jsr ClearScreen
@@ -140,7 +145,8 @@ ScrRAMNextLine: {
 }
 
 
-* = $f800
+.align $40
+SPRITES_BASE:
 	.import binary "./assets/sprites.bin"
 .align $10
 SPRITE_POINTERS:

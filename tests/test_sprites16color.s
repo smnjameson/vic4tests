@@ -2,6 +2,7 @@ test_sprites16color: {
 	Desc_Colors:
 	//		 0         1         2         3         4         5         6         7         8
 	String(	"palette - display 8 spr at 16x21px in 16 colors, each sprite a smooth gradient  "
+		  + "transparency - transparent band should move through the sprites                 "
 		  + "transparency - transparent band should move through the sprites                 ")
 
 	Colors: {
@@ -10,9 +11,9 @@ test_sprites16color: {
 			sta $d015
 
 			//position sprites
-			ldx #$50
+			ldx #$70
 			ldy #$00
-			lda #$20
+			lda #$40
 			clc 
 		!:
 			stx $d001, y 
@@ -26,8 +27,12 @@ test_sprites16color: {
 			//enable 16 color sprites
 			lda #$ff
 			sta $d06b
+			//extra wide sprites (16px)
+			sta $d057
 
-			//Set 16bit sprite pointers and location
+
+
+		// 	//Set 16bit sprite pointers and location
 			lda #$80
 			sta $d06e
 			lda #<SPRITE_POINTERS 
@@ -35,8 +40,8 @@ test_sprites16color: {
 			lda #>SPRITE_POINTERS 
 			sta $d06d
 			//Fill with sample sprite
-			lda #$03
-			ldx #$e0 
+			lda #>[SPRITES_BASE / $40]
+			ldx #<[SPRITES_BASE / $40]
 			ldy #$00
 		!:
 			stx SPRITE_POINTERS, y
@@ -46,21 +51,20 @@ test_sprites16color: {
 			cpy #$10
 			bne !-
 
-			//set all trasparencies to color 0
 			lda #$00
-			ldy #$07
-		!:
-			sta $d027, y 
-			dey
-			bpl !-
+			sta $d072 
+			sta $d074
+			sta $d075
+			sta $d05f
+			sta $d055
 
 
 			WriteDescription(Desc_Colors)
-
 		//Loop until X is pressed
 		!Loop:
 			inc TransparentIndex
 			lda TransparentIndex
+			and #$0f
 			ldy #$07
 		!:
 			sta $d027, y 

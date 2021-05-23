@@ -16,7 +16,7 @@ rem PRG BOOT  - Initial file should be this
 
 echo DEPLOYING...
 %DEPLOY% "./bin/vic4tests.prg"
-"C:\Program Files\xemu\xmega65.exe" -besure -prg "./bin/vic4tests.prg"
+"C:\Program Files\xemu\xmega65.exe" -besure -loadrom "../roms/920180.bin" -forcerom -prg "./bin/vic4tests.prg"
 
 
 
