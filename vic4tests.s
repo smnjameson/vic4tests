@@ -33,14 +33,14 @@ Entry: {
 		lda #$04
 		sta $d030
 
-		jsr setSpritePalette
+		jsr setPalettes
 		
 		CreateMenu(MenuConfig.Main)
 
 		jmp *
 }
 
-setSpritePalette: {
+setPalettes: {
 			lda $d070
 			and #%00110011
 			ora #$11001100		//SpritePallete = %11
@@ -56,6 +56,24 @@ setSpritePalette: {
 			sta $d300, x //Blue
 			inx
 			bne !-
+
+
+			lda $d070
+			and #%00001111		//CharPallete = %00
+			ora #%01010000
+			sta $d070
+
+			ldx #$00
+		!:
+			lda SpritePaletteData + $000, x
+			sta $d100, x //Red
+			lda SpritePaletteData + $100, x
+			sta $d200, x //Green
+			lda SpritePaletteData + $200, x
+			sta $d300, x //Blue
+			inx
+			bne !-
+		 	
 			rts	
 }
 
@@ -68,9 +86,8 @@ SpritePaletteData: {
 
 ResetScreen: {
 		//Responsible for bringing the system back to initial state
-		lda #$0b
+		lda #143
 		sta $d020
-		lda #$00
 		sta $d021
 		
 		//Restore inital VIC-IV values
@@ -85,6 +102,20 @@ ResetScreen: {
 		trb $d04d 
 		trb $d04f 
 
+		//Restore 8 bit char mode
+		lda #$07
+		trb $d054
+
+		//Set row sizes
+		lda #$50
+		sta $d05e
+		lda #$50
+		sta $d058
+		lda #$00
+		sta $d059
+
+		lda #$a0
+		tsb $d031
 
 		jsr ClearScreen
 
@@ -106,6 +137,7 @@ ClearScreen: {
 		sta $0d00, x
 		sta $0e00, x
 		sta $0f00, x
+		
 		dex 
 		bne !-
 
@@ -113,7 +145,7 @@ ClearScreen: {
 		jsr ResetColRAMVector
 		ldz #$00
 		ldx #$08
-		lda #$05
+		lda #$00
 	!:
 		sta ((zpColRAMVector)), z 
 		inz 
@@ -123,6 +155,48 @@ ClearScreen: {
 		bne !-
 		rts
 }
+
+ClearScreen16: {
+			//Clear screen
+		lda #$20
+		ldx #$00
+	!:
+		sta $0800, x
+		sta $0900, x
+		sta $0a00, x
+		sta $0b00, x
+		sta $0c00, x
+		sta $0d00, x
+		sta $0e00, x
+		sta $0f00, x
+		sta $1000, x
+		sta $1100, x
+		sta $1200, x
+		sta $1300, x
+		sta $1400, x
+		sta $1500, x
+		sta $1600, x
+		sta $1700, x
+		eor #$20	//Toggle between $20 and $00 for 16 bit clear
+		inx 
+		bne !-
+
+		//Clear to green text
+		jsr ResetColRAMVector
+		ldz #$00
+		ldx #$10
+		lda #$00
+	!:
+		sta ((zpColRAMVector)), z 
+		inz 
+		bne !-
+		inc zpColRAMVector + 1 
+		dex 
+		bne !-
+		rts
+}
+
+
 ResetColRAMVector: {
 		lda #$00
 		sta zpColRAMVector + 0
@@ -152,6 +226,22 @@ ScrRAMNextLine: {
 }
 
 
+.align $100
+CHARS:
+	.byte $11,$11,$11,$11, $77,$77,$77,$77
+	.byte $01,$00,$00,$10, $07,$00,$00,$70
+	.byte $01,$00,$00,$10, $07,$00,$00,$70
+	.byte $01,$00,$00,$10, $07,$00,$00,$70
+	.byte $01,$00,$00,$10, $07,$00,$00,$70
+	.byte $01,$00,$33,$10, $07,$00,$33,$70
+	.byte $01,$00,$33,$10, $07,$00,$33,$70
+	.byte $11,$11,$11,$11, $77,$77,$77,$77
+
+
+
+.align $10
+SPRITE_POINTERS:
+	.fill 16, 0
 
 .align $40
 SPRITES_1BIT:
@@ -163,6 +253,3 @@ SPRITES_1BIT:
 SPRITES_BASE:
 	.import binary "./assets/sprites.bin"
 
-.align $10
-SPRITE_POINTERS:
-	.fill 16, 0

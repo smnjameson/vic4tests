@@ -21,7 +21,13 @@
 		jsr DrawDescription
 }
 
-
+.macro WriteDescription16(strptr) {
+		lda #<strptr
+		sta zpMenuTarget + 0
+		lda #>strptr
+		sta zpMenuTarget + 1
+		jsr DrawDescription16
+}
 
 
 
@@ -169,6 +175,7 @@ WaitOption: {
 
 DrawDescription: {
 		jsr ResetScrRAMVector
+		clc
 		lda zpScrRAMVector + 0
 		adc #<1600
 		sta zpScrRAMVector + 0
@@ -186,6 +193,50 @@ DrawDescription: {
 		inc zpStringTarget + 1
 		inc zpScrRAMVector + 1
 		bra !-
+	!Exit:
+		rts
+}
+
+DrawDescription16: {
+		jsr ResetScrRAMVector
+		clc
+		lda zpScrRAMVector + 0
+		adc #<1200
+		sta zpScrRAMVector + 0
+		lda zpScrRAMVector + 1
+		adc #>1200
+		sta zpScrRAMVector + 1
+
+		jsr ResetColRAMVector
+		lda zpColRAMVector + 0
+		adc #<1200
+		sta zpColRAMVector + 0
+		lda zpColRAMVector + 1
+		adc #>1200
+		sta zpColRAMVector + 1
+
+		ldy #$00
+		ldz #$00
+	!loop:
+		lda (zpStringTarget), y 
+		beq !Exit+
+		sta (zpScrRAMVector), z
+		lda #$00
+		sta ((zpColRAMVector)), z 
+		inz 
+		lda #$00
+		sta (zpScrRAMVector), z 
+		sta ((zpColRAMVector)), z 
+		inz 
+		bne !+
+		inc zpScrRAMVector + 1
+		inc zpColRAMVector + 1
+	!:
+		iny 
+		bne !loop-
+		inc zpStringTarget + 1
+		// inc zpScrRAMVector + 1
+		bra !loop-
 	!Exit:
 		rts
 }

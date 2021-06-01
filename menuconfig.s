@@ -1,6 +1,7 @@
 #import "./tests/test_sprites16color.s"
 #import "./tests/test_sprites1bit.s"
 #import "./tests/test_spritesHtile.s"
+#import "./tests/test_16colorcharattr.s"
 
 MenuConfig: {
 		.const IS_MENU = 1
@@ -14,7 +15,7 @@ MenuConfig: {
 				.word Sprites16cols		 //Points to next menu or code item
 				.byte IS_MENU				 //Defines menu item type
 				
-				String("super extended attribute mode")
+				String("16 color char mode")
 				.word SuperAttr			 //Points to next menu or code item
 				.byte IS_MENU				 //Defines menu item type
 
@@ -25,8 +26,12 @@ MenuConfig: {
 
 		SuperAttr: {
 			Title:
-				String("coming soon...super extended attribute mode")
+				String("16 color charmode")
 			Items: {
+				String("attributes")
+				.word test_16colorcharattr.Start
+				.byte IS_CODE
+
 				String("return to main menu")
 				.word Main
 				.byte IS_MENU
@@ -47,7 +52,7 @@ MenuConfig: {
 				.word test_sprites1bit.Start
 				.byte IS_CODE	
 
-				String("Hhorizontal Tile")
+				String("horizontal tiling")
 				.word test_spritesHtile.Start
 				.byte IS_CODE				
 
@@ -58,4 +63,4 @@ MenuConfig: {
 				.byte $00
 			}
 		}				
-}
+} 
