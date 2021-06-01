@@ -21,23 +21,7 @@
 		jsr DrawDescription
 }
 
-//Due to inconsistencies in xemu and hw
-//This is actually the "X" key currently
-.macro ExitIfRunstop() {
-		lda #$ff
-		cmp $d012 
-		bne *-3
-		lda #$00
-		cmp $d012
-		bne *-3
-		lda $d610
-		and #$1f
-		cmp #$18
-		bne !+
-		sta $d610
-		rts
-	!:
-}
+
 
 
 

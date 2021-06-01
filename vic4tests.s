@@ -5,6 +5,7 @@
 BasicUpstart65(Entry)
 * = $2020
 #import "./src/menu.s"
+#import "./src/testrunner.s"
 
 Entry: {
 		//Disable ROM banks and interrupts
@@ -67,8 +68,9 @@ SpritePaletteData: {
 
 ResetScreen: {
 		//Responsible for bringing the system back to initial state
-		lda #$00
+		lda #$0b
 		sta $d020
+		lda #$00
 		sta $d021
 		
 		//Restore inital VIC-IV values
@@ -77,6 +79,11 @@ ResetScreen: {
 		lda #$00
 		sta $d015
 		sta $d06b
+
+		//disable sprites horizontally tiled
+		lda #$f0
+		trb $d04d 
+		trb $d04f 
 
 
 		jsr ClearScreen
@@ -145,9 +152,17 @@ ScrRAMNextLine: {
 }
 
 
+
 .align $40
+SPRITES_1BIT:
+	SquareSprite:
+		.byte 255,255,255
+		.fill 19, [128,0,1]
+		.byte 255,255,255
+.align $40		
 SPRITES_BASE:
 	.import binary "./assets/sprites.bin"
+
 .align $10
 SPRITE_POINTERS:
 	.fill 16, 0

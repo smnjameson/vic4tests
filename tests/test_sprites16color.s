@@ -2,32 +2,39 @@ test_sprites16color: {
 	Desc_Colors:
 	//		 0         1         2         3         4         5         6         7         8
 	String(	"palette - display 8 spr at 16x21px in 16 colors, each sprite a smooth gradient  "
-		  + "transparency - transparent band should move through the sprites                 "
 		  + "transparency - transparent band should move through the sprites                 ")
 
-	Colors: {
+	Start: {
 			//enable sprites
 			lda #$ff
 			sta $d015
 
 			//position sprites
-			ldx #$70
 			ldy #$00
-			lda #$40
+			ldx #$32
+			lda #$18
 			clc 
 		!:
 			stx $d001, y 
 			sta $d000, y 
-			adc #$18 
+			adc #$2b 
 			iny
 			iny 
 			cpy #$10
 			bne !-
 
+
+			//Set msbs and push last sprite right to edge
+			lda #$c0
+			sta $d010 
+			inc $d00e
+			inc $d00e
+			inc $d00e
+			
 			//enable 16 color sprites
+			//extra wide sprites (16px)
 			lda #$ff
 			sta $d06b
-			//extra wide sprites (16px)
 			sta $d057
 
 
@@ -51,13 +58,6 @@ test_sprites16color: {
 			cpy #$10
 			bne !-
 
-			lda #$00
-			sta $d072 
-			sta $d074
-			sta $d075
-			sta $d05f
-			sta $d055
-
 
 			WriteDescription(Desc_Colors)
 		//Loop until X is pressed
@@ -71,13 +71,28 @@ test_sprites16color: {
 			dey
 			bpl !-
 
-			
-			ExitIfRunstop()
+			lda #$ff
+			jsr WaitForRaster
+			// testColorAt(2,2,$000000)
+			// bcs Fail
+			jsr ExitIfRunstop
 			jmp !Loop-
+
+
+		Fail:
+			inc $d020
+			nop
+			nop
+			jmp Fail
 
 		TransparentIndex:
 			.byte $00
+
+		Tests:
+
 	}
+
+
 }
 
 
