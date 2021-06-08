@@ -30,26 +30,7 @@ test_16colorcharattr: {
 
 			jsr ResetColRAMVector
 			jsr ResetScrRAMVector
-			// lda #$d8
-			// sta zpColRAMVector + 1	
-
-
-			// ldy #$00
-			// lda #$00
-			// sta (zpScrRAMVector), y
-			// iny 
-			// sta (zpScrRAMVector), y
-			// inc zpScrRAMVector + 0
-			// inc zpScrRAMVector + 0
-
-			// ldz #$00
-			// lda #$90
-			// sta ((zpColRAMVector)), z			
-			// inz 
-			// lda #$00
-			// sta ((zpColRAMVector)), z
-			// inc zpColRAMVector + 0
-			// inc zpColRAMVector + 0				
+	
 
 
 			ldy #$00

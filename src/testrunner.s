@@ -74,6 +74,7 @@ WaitForRaster: {
 
 ExitIfRunstop:{
 		lda $d610
+		
 		cmp #$1b
 		beq !exit+
 		cmp #$03
@@ -83,5 +84,6 @@ ExitIfRunstop:{
 		pla 
 		pla
 	!:
+		sta $d610
 		rts
 }

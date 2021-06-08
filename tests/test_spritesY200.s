@@ -1,9 +1,17 @@
-test_spritesHtile: {
+test_spritesY200: {
 	Desc_Colors:
 	//		 0         1         2         3         4         5         6         7         8
-	String(	"display - 16color sprites tiled horizontally, increasing start xpos")
+	String(	"16color arbitrary y height sprites                                              "+
+		    "                                                                                "+
+		    "each sprite strip should be bands of color each band the same height with a     "+
+		    "transparent black sine wave continuous throughout with no breaks. each strip    "+
+		    "should animate from 0-200 sprite height.")
 
 	Start: {
+			// //enable v400 mode
+			// lda #$08
+			// tsb $d031
+
 			//enable sprites
 			lda #$ff
 			sta $d015
@@ -16,13 +24,10 @@ test_spritesHtile: {
 		!:
 			sta $d000, y 
 			clc 
-			adc #$2a
+			adc #$12
 			pha 
 			txa 
 			sta $d001, y 
-			clc 
-			adc #$18 
-			tax
 			pla 
 			iny
 			iny 
@@ -30,21 +35,15 @@ test_spritesHtile: {
 			bne !-
 
 			//Set msbs and push last sprite right to edge
-			lda #$c0
+			lda #$00
 			sta $d010 
-			inc $d00e
-			inc $d00e
+			// inc $d00e
+			// inc $d00e
 
 			//set 16 color + extra wide sprites 
 			lda #$ff
 			sta $d06b
 			sta $d057
-
-			//Extend sprites tiled horizontally
-			lda #$f0
-			tsb $d04d 
-			tsb $d04f 
-
 
 		    //Set 16bit sprite pointers and location
 			lda #$80
@@ -56,8 +55,8 @@ test_spritesHtile: {
 
 
 			//Fill with sample sprite
-			lda #>[SPRITES_BASE / $40] + 3
-			ldx #<[SPRITES_BASE / $40] + 3	
+			lda #>[HIGH_SPRITE / $40]
+			ldx #<[HIGH_SPRITE / $40]
  			ldy #$00
 		!:
 			stx SPRITE_POINTERS, y
@@ -67,12 +66,14 @@ test_spritesHtile: {
 			cpy #$10
 			bne !-
 
+			//setr extended height
+			lda #$ff
+			sta $d055
 
 			//set colors
-			clc
+			lda #$00
 			ldy #$07
 		!:
-			lda SprColors, y
 			sta $d027, y 
 			dey
 			bpl !-
@@ -84,21 +85,17 @@ test_spritesHtile: {
 		!Loop:
 			lda #$ff
 			jsr WaitForRaster
-			// testColorAt(2,2,$000000)
-			// bcs Fail
+
+			inc SprHeight
+			lda SprHeight
+			sta $d056
+
 			jsr ExitIfRunstop
 			jmp !Loop-
 
 
-		Fail:
-			inc $d020
-			nop
-			nop
-			jmp Fail
-
-		SprColors:
-			.byte 0,0,0,0,0,0,0,0
-		Tests:
+		SprHeight:
+			.byte 21
 
 	}
 

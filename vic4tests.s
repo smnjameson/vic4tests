@@ -59,7 +59,7 @@ setPalettes: {
 
 
 			lda $d070
-			and #%00001111		//CharPallete = %00
+			and #%00001111		//CharPallete = %01
 			ora #%01010000
 			sta $d070
 
@@ -73,7 +73,24 @@ setPalettes: {
 			sta $d300, x //Blue
 			inx
 			bne !-
-		 	
+
+
+			lda $d070
+			and #%00111100		//Alternate Pallete = %10
+			ora #%10000010
+			sta $d070
+
+			ldx #$00
+		!:
+			lda AltPaletteData + $000, x
+			sta $d100, x //Red
+			lda AltPaletteData + $100, x
+			sta $d200, x //Green
+			lda AltPaletteData + $200, x
+			sta $d300, x //Blue
+			inx
+			bne !-
+
 			rts	
 }
 
@@ -83,13 +100,32 @@ SpritePaletteData: {
 	.import binary "./assets/palblu.bin"
 }
 
+AltPaletteData: {
+	.import binary "./assets/palgrn.bin"
+	.import binary "./assets/palgrn.bin"
+	.import binary "./assets/palgrn.bin"
+	
+
+	// .import binary "./assets/altpalred.bin"
+	// .import binary "./assets/altpalgrn.bin"
+	// .import binary "./assets/altpalblu.bin"
+}
+
 
 ResetScreen: {
 		//Responsible for bringing the system back to initial state
-		lda #143
+		lda #32
 		sta $d020
+		lda #143
 		sta $d021
 		
+		lda #$01
+		tsb $d016
+		
+		//disable v400 mode
+		lda #$08
+		trb $d031
+
 		//Restore inital VIC-IV values
 		//hide sprites
 		//turn off 16 color sprites
@@ -117,6 +153,9 @@ ResetScreen: {
 		lda #$a0
 		tsb $d031
 
+		lda #$19
+		sta $d07b
+		
 		jsr ClearScreen
 
 		rts
@@ -226,7 +265,25 @@ ScrRAMNextLine: {
 }
 
 
-.align $100
+
+SinusXLo:
+	.fill 256, <[sin((i/256) * PI * 2) * 152 + 152]
+SinusXHi:
+	.fill 256, >[sin((i/256) * PI * 2) * 152 + 152]
+SinusRRBY:
+	.fill 64, [floor([sin((i/64) * PI * 2) * 3 + 4])]
+
+
+SinusXLo2:
+	.fill 256, <[sin((i/256) * PI * 2) * 168 + 152]
+SinusXHi2:
+	.fill 256, >[sin((i/256) * PI * 2) * 168 + 152]
+
+
+SinusXLo3:
+	.fill 256, <[sin((i/256) * PI * 2) * 127 + 128]
+
+* = $8000
 CHARS:
 	.byte $11,$11,$11,$11, $77,$77,$77,$77
 	.byte $01,$00,$00,$10, $07,$00,$00,$70
@@ -238,6 +295,66 @@ CHARS:
 	.byte $11,$11,$11,$11, $77,$77,$77,$77
 
 
+CHAR1:
+	.fill 64, 0
+CHAR2:
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$55,$55,$00,$00,$00
+	.byte $00,$00,$55,$55,$55,$55,$00,$00
+	.byte $00,$00,$55,$55,$55,$55,$00,$00
+	.byte $00,$00,$00,$55,$55,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+CHAR3:
+	.fill 64, 0
+CHAR4:
+	.byte 15,15,15,15,15,15,15,15
+	.byte 15,3,4,5,6,7,8,15
+	.byte 15,4,5,6,7,8,9,15
+	.byte 15,5,6,7,8,9,1,15
+	.byte 15,6,7,8,9,1,2,15
+	.byte 15,7,8,9,1,2,3,15
+	.byte 15,8,9,1,2,3,4,15
+	.byte 15,15,15,15,15,15,15,15
+
+
+CHAR5:
+	.byte 1,0,0,0,0,0,0,1
+	.byte 0,1,0,0,0,0,1,0
+	.byte 0,0,1,0,0,1,0,0
+	.byte 0,0,0,1,1,0,0,0
+	.byte 0,0,0,1,1,0,0,0
+	.byte 0,0,1,0,0,1,0,0
+	.byte 0,1,0,0,0,0,1,0
+	.byte 1,0,0,0,0,0,0,1
+CHAR6:
+	.byte 0,0,0,0,0,0,0,0
+	.byte 0,0,0,0,0,0,0,0
+	.byte 0,0,4,4,4,4,0,0
+	.byte 0,4,4,4,4,4,4,0
+	.byte 0,4,4,4,4,4,4,0
+	.byte 0,0,4,4,4,4,0,0
+	.byte 0,0,0,0,0,0,0,0
+	.byte 0,0,0,0,0,0,0,0
+CHAR7:
+	.byte 0,0,0,0,0,0,0,0
+	.byte 0,0,0,0,0,0,0,0
+	.byte 0,0,4,4,4,4,0,0
+	.byte 0,4,4,4,4,4,4,0
+	.byte 0,4,4,4,4,4,4,0
+	.byte 0,0,4,4,4,4,0,0
+	.byte 0,0,0,0,0,0,0,0
+	.byte 0,0,0,0,0,0,0,0
+CHAR8:
+	.byte $55,$55,$55,$55,$55,$55,$55,$55
+	.byte $55,$55,$55,$55,$55,$55,$55,$55
+	.byte $55,$22,$22,$22,$22,$22,$22,$55
+	.byte $55,$22,$22,$22,$22,$22,$22,$55
+	.byte $55,$22,$22,$22,$22,$22,$22,$55
+	.byte $55,$22,$22,$22,$22,$22,$22,$55
+	.byte $55,$55,$55,$55,$55,$55,$55,$55
+	.byte $55,$55,$55,$55,$55,$55,$55,$55
 
 .align $10
 SPRITE_POINTERS:
@@ -249,7 +366,21 @@ SPRITES_1BIT:
 		.byte 255,255,255
 		.fill 19, [128,0,1]
 		.byte 255,255,255
+
 .align $40		
 SPRITES_BASE:
 	.import binary "./assets/sprites.bin"
 
+.align $40
+HIGH_SPRITE:
+	.for(var i=0;i<200; i++) {
+		.var transByte = round(sin(i/6) * 3.5 + 3.5)
+		.var color = (floor((i/20) + 1) << 4) + floor((i/20) + 1)
+		.if(transByte > 0) {
+			.fill transByte, color
+		}
+		.byte $00
+		.if(transByte < 7) {
+			.fill 7-transByte, color
+		}	
+	}

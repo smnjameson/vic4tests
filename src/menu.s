@@ -41,6 +41,11 @@ MenuData: {
 
 
 Menu: {
+		lda zpMenuTarget + 0
+		sta zpPrevMenu + 0
+		lda zpMenuTarget + 1
+		sta zpPrevMenu + 1
+
 		jsr ResetScreen 
 		jsr ResetScrRAMVector
 
@@ -134,18 +139,29 @@ MenuGetNextItem: {
 
 WaitOption: {
 	!:
+		lda #$fe
+		cmp $d012
+		bne *-3
+		lda #$ff
+		cmp $d012
+		bne *-3
+
 		lda $d610
+
+
 		and #$1f
 		sec 
 		sbc #$01
-		
-
+		sta $d610
 		bmi !-
 
 		cmp MenuData.NumItems
 		bcs !-
-
 		sta $d610
+
+		ldx #$ff
+		cpx $d012
+		bne *-3
 
 		//Get menu item type
 		tax 
@@ -169,7 +185,14 @@ WaitOption: {
 		sta routine + 1
 		jsr routine:$BEEF
 
-		CreateMenu(MenuConfig.Main)
+	!prevMenu:
+		sta $d610
+		lda zpPrevMenu + 0
+		sta zpMenuTarget + 0
+		lda zpPrevMenu + 1
+		sta zpMenuTarget + 1
+		jmp Menu
+		// CreateMenu(MenuConfig.Main)
 }
 
 
