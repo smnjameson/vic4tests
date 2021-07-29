@@ -10,6 +10,7 @@
 #import "./tests/test_dmaTransparency.s"
 #import "./tests/test_spritesY200.s"
 #import "./tests/test_spritesBorderRelative.s"
+#import "./tests/test_16color8pxAltPalette.s"
 
 MenuConfig: {
 		.const IS_MENU = 1
@@ -96,6 +97,10 @@ MenuConfig: {
 
 				String("rrb boundary and wrap 40 column")
 				.word test_16colorRRBBoundary.Start
+				.byte IS_CODE
+
+				String("fcm 8px alternate palette 40 column")
+				.word test_16color8pxAltPalette.Start
 				.byte IS_CODE
 
 				String("return to main menu")
