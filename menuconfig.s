@@ -9,6 +9,7 @@
 #import "./tests/test_chargenRowCount.s"
 #import "./tests/test_dmaTransparency.s"
 #import "./tests/test_spritesY200.s"
+#import "./tests/test_spritesBorderRelative.s"
 
 MenuConfig: {
 		.const IS_MENU = 1
@@ -125,6 +126,10 @@ MenuConfig: {
 				.word test_spritesY200.Start
 				.byte IS_CODE				
 
+				String("x-coord not affected by border width")
+				.word test_spritesBorderRelative.Start
+				.byte IS_CODE				
+
 				String("return to main menu")
 				.word Main
 				.byte IS_MENU
@@ -132,4 +137,4 @@ MenuConfig: {
 				.byte $00
 			}
 		}				
-} 
+}
