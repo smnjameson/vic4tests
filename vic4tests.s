@@ -138,6 +138,12 @@ ResetScreen: {
 		trb $d04d 
 		trb $d04f 
 
+		//Reset sprite heights to default
+		lda #$00
+		sta $d055
+		lda #$15
+		sta $d056
+
 		//Restore 8 bit char mode
 		lda #$07
 		trb $d054
