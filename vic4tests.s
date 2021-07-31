@@ -144,6 +144,12 @@ ResetScreen: {
 		lda #$15
 		sta $d056
 
+		//Reset border width
+		lda #$50
+		sta $d05c
+		lda #$3f
+		trb $d05d
+
 		//Restore 8 bit char mode
 		lda #$07
 		trb $d054
