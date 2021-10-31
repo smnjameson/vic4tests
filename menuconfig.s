@@ -6,6 +6,7 @@
 #import "./tests/test_16colorRRBY.s"
 #import "./tests/test_16colorRRBAltPalette.s"
 #import "./tests/test_16colorRRBBoundary.s"
+#import "./tests/test_16colorRRBRowMask.s"
 #import "./tests/test_chargenRowCount.s"
 #import "./tests/test_dmaTransparency.s"
 #import "./tests/test_spritesY200.s"
@@ -98,6 +99,10 @@ MenuConfig: {
 
 				String("rrb boundary and wrap 40 column")
 				.word test_16colorRRBBoundary.Start
+				.byte IS_CODE
+
+				String("rrb with rowmask 40 column")
+				.word test_16colorRRBRowMask.Start
 				.byte IS_CODE
 
 				String("fcm 8px alternate palette 40 column")
