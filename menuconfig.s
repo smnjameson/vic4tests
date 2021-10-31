@@ -6,9 +6,11 @@
 #import "./tests/test_16colorRRBY.s"
 #import "./tests/test_16colorRRBAltPalette.s"
 #import "./tests/test_16colorRRBBoundary.s"
+#import "./tests/test_16colorRRBRowMask.s"
 #import "./tests/test_chargenRowCount.s"
 #import "./tests/test_dmaTransparency.s"
 #import "./tests/test_spritesY200.s"
+#import "./tests/test_spritesHMSBWrap.s"
 #import "./tests/test_spritesBorderRelative.s"
 #import "./tests/test_16color8pxAltPalette.s"
 
@@ -99,6 +101,10 @@ MenuConfig: {
 				.word test_16colorRRBBoundary.Start
 				.byte IS_CODE
 
+				String("rrb with rowmask 40 column")
+				.word test_16colorRRBRowMask.Start
+				.byte IS_CODE
+
 				String("fcm 8px alternate palette 40 column")
 				.word test_16color8pxAltPalette.Start
 				.byte IS_CODE
@@ -130,6 +136,10 @@ MenuConfig: {
 				String("arbitrary y height")
 				.word test_spritesY200.Start
 				.byte IS_CODE				
+
+				String("horizontal msb wrapping")
+				.word test_spritesHMSBWrap.Start
+				.byte IS_CODE
 
 				String("x-coord not affected by border width")
 				.word test_spritesBorderRelative.Start

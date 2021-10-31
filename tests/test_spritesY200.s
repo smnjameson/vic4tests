@@ -78,6 +78,10 @@ test_spritesY200: {
 			dey
 			bpl !-
 
+			//Set initial sprite height
+			lda #21
+			sta SprHeight
+
 			WriteDescription(Desc_Colors)
 
 
