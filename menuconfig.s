@@ -9,6 +9,7 @@
 #import "./tests/test_chargenRowCount.s"
 #import "./tests/test_dmaTransparency.s"
 #import "./tests/test_spritesY200.s"
+#import "./tests/test_spritesHMSBWrap.s"
 #import "./tests/test_spritesBorderRelative.s"
 #import "./tests/test_16color8pxAltPalette.s"
 
@@ -130,6 +131,10 @@ MenuConfig: {
 				String("arbitrary y height")
 				.word test_spritesY200.Start
 				.byte IS_CODE				
+
+				String("horizontal msb wrapping")
+				.word test_spritesHMSBWrap.Start
+				.byte IS_CODE
 
 				String("x-coord not affected by border width")
 				.word test_spritesBorderRelative.Start

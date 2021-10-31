@@ -129,9 +129,13 @@ ResetScreen: {
 		//Restore inital VIC-IV values
 		//hide sprites
 		//turn off 16 color sprites
+		//reset sprite expansion and x-msb
 		lda #$00
 		sta $d015
 		sta $d06b
+		sta $d017
+		sta $d01d
+		sta $d010
 
 		//disable sprites horizontally tiled
 		lda #$f0
