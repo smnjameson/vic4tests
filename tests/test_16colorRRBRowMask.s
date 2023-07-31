@@ -9,7 +9,8 @@ test_16colorRRBRowMask: {
 		    "                                        " +
 		    "                                        " +
 		    "a rectangle moves around without any    " +
-		    "display artifacts above or below it     ")
+		    "display artifacts above or below it.    " +
+		    "press space to toggle movement on/off.  ")
 
 	Start: {
 			//Set 16 bit char mode and enable FCM for chars > $FF
@@ -46,6 +47,7 @@ test_16colorRRBRowMask: {
 			lda #$00
 			sta SpriteX + 1
 			sta SpriteY
+			sta Freeze
 			lda #$01
 			sta XSpeed
 			sta YSpeed
@@ -54,12 +56,30 @@ test_16colorRRBRowMask: {
 			lda #$ff
 			jsr WaitForRaster
 
+			lda $d610
+			beq !CheckFreeze+ //Branch if no key pressed
+
+			sta $d610
+			cmp #$03 // Runstop
+			beq !Exit+
+			cmp #$1b // Esc
+			beq !Exit+
+			cmp #$20 // Space
+			bne !CheckFreeze+
+			inc Freeze //Toggle freeze
+
+		!CheckFreeze:
+			lda Freeze
+			lsr
+			bcs !Loop-
+
 			jsr ClearSprite
 			jsr MoveSprite
 			jsr DrawSprite
-
-			jsr ExitIfRunstop
 			jmp !Loop-
+
+		!Exit:
+			rts
 	}
 
 	ClearSprite: {
@@ -151,7 +171,7 @@ test_16colorRRBRowMask: {
 			bmi !MoveLeft+
 			cpx #$01
 			bcc !IncX+
-			cmp #48
+			cmp #$2e
 			bcs !ToggleHor+
 		!IncX:
 			tya
@@ -182,7 +202,7 @@ test_16colorRRBRowMask: {
 			lda SpriteY
 			ldy YSpeed
 			bmi !MoveUp+
-			cmp #62
+			cmp #$3e
 			bcs !ToggleVer+
 		!AdjustY:
 			tya
@@ -210,6 +230,8 @@ test_16colorRRBRowMask: {
 		.byte $01
 	YSpeed:
 		.byte $01
+	Freeze:
+		.byte $00
 
 	DMAScreenCopy:
 		DMAHeader(0, 0)
@@ -249,12 +271,12 @@ test_16colorRRBRowMask: {
 		.fill NUM_ROWS, >[SCREEN_RAM + 80*i + 40]
 
 	RowMaskData:
-		.byte %01111111, %11111111, %10000000
-		.byte %00111111, %11111111, %11000000
-		.byte %00011111, %11111111, %11100000
-		.byte %00001111, %11111111, %11110000
-		.byte %00000111, %11111111, %11111000
-		.byte %00000011, %11111111, %11111100
-		.byte %00000001, %11111111, %11111110
+		.byte %11111110, %11111111, %00000001
+		.byte %11111100, %11111111, %00000011
+		.byte %11111000, %11111111, %00000111
+		.byte %11110000, %11111111, %00001111
+		.byte %11100000, %11111111, %00011111
+		.byte %11000000, %11111111, %00111111
+		.byte %10000000, %11111111, %01111111
 		.byte %00000000, %11111111, %11111111
 }
